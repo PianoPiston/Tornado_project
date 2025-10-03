@@ -18,4 +18,4 @@ Operational side
 - Map?
 - Search functionality?
 
-
+Maybe some sort of web scraper for tori.fi etc...
