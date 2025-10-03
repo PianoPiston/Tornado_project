@@ -5,6 +5,7 @@ Citizen webpage
 - Authentication
 - Survey
   * Location
+  * Contact information?
   * Skills
   * Equipment
 - Update page?
