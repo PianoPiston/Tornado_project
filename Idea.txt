@@ -1,0 +1,21 @@
+
+
+Citizen webpage
+- Welcome/Introduction page
+- Authentication
+- Survey
+  * Location
+  * Skills
+  * Equipment
+- Update page?
+
+Backend
+- Web server
+- Ai analysis of the form
+- Database
+
+Operational side
+- Map?
+- Search functionality?
+
+
