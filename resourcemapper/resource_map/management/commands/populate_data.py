@@ -17,21 +17,21 @@ FINLAND_COORDS = {
 }
 
 PROFESSIONAL_SAMPLES = [
-    {'type': 'doctor', 'name': 'Dr. Aalto', 'specialty': 'General Surgery'},
-    {'type': 'doctor', 'name': 'Dr. Virtanen', 'specialty': 'Pediatrics'},
-    {'type': 'nurse', 'name': 'Nurse Korhonen', 'specialty': 'Emergency Care'},
-    {'type': 'engineer', 'name': 'Eng. Nieminen', 'specialty': 'Civil Engineering'},
-    {'type': 'electrician', 'name': 'Elec. Laine', 'specialty': 'High Voltage Systems'},
-    {'type': 'mechanic', 'name': 'Mech. Heikkinen', 'specialty': 'Heavy Machinery'},
+    {'type': 'doctor', 'alias': 'Dave', 'specialty': 'General Surgery'},
+    {'type': 'doctor', 'alias': 'Jorma', 'specialty': 'Pediatrics'},
+    {'type': 'nurse', 'alias': 'John', 'specialty': 'Emergency Care'},
+    {'type': 'engineer', 'alias': 'Taavi', 'specialty': 'Civil Engineering'},
+    {'type': 'electrician', 'alias': 'Peter', 'specialty': 'High Voltage Systems'},
+    {'type': 'mechanic', 'alias': 'Petri', 'specialty': 'Heavy Machinery'},
 ]
 
 CIVILIAN_SAMPLES = [
-    {'type': 'car', 'contact': 'Matti', 'desc': 'Volvo V70', 'qty': '1 vehicle'},
-    {'type': 'tractor', 'contact': 'Liisa', 'desc': 'Valtra T-Series', 'qty': '1 tractor'},
-    {'type': 'generator', 'contact': 'Pekka', 'desc': 'Honda 5kW Petrol', 'qty': '1 unit'},
-    {'type': 'food supply', 'contact': 'Anna', 'desc': 'Canned goods', 'qty': '50 kg'},
-    {'type': 'shelter', 'contact': 'Eemeli', 'desc': 'Basement shelter', 'qty': '5 person capacity'},
-    {'type': 'tools', 'contact': 'Sofia', 'desc': 'General mechanics toolkit', 'qty': '1 set'},
+    {'type': 'car', 'contact': 'matti.meikäläinen@gmail.com', 'desc': 'Volvo V70', 'qty': '1 vehicle'},
+    {'type': 'tractor', 'contact': '0231223042', 'desc': 'Valtra T-Series', 'qty': '1 tractor'},
+    {'type': 'generator', 'contact': 'pekka.pouta@hotmail.com', 'desc': 'Honda 5kW Petrol', 'qty': '1 unit'},
+    {'type': 'food supply', 'contact': 'paavo.pesusieni@bikinibottom.org', 'desc': 'Canned goods', 'qty': '50 kg'},
+    {'type': 'shelter', 'contact': '0442315829', 'desc': 'Basement shelter', 'qty': '5 person capacity'},
+    {'type': 'tools', 'contact': 'pekka.pouta@hotmail.com', 'desc': 'General mechanics toolkit', 'qty': '1 set'},
 ]
 
 
@@ -46,10 +46,9 @@ class Command(BaseCommand):
         self.stdout.write('Creating new sample data...')
 
         # Create 15 professional resources
-        for _ in range(15):
-            sample = random.choice(PROFESSIONAL_SAMPLES)
+        for sample in PROFESSIONAL_SAMPLES:
             ProfessionalResource.objects.create(
-                name=sample['name'],
+                alias=sample['alias'],
                 profession=sample['type'],
                 specialty=sample['specialty'],
                 latitude=random.uniform(FINLAND_COORDS['lat_min'], FINLAND_COORDS['lat_max']),
@@ -57,8 +56,7 @@ class Command(BaseCommand):
             )
 
         # Create 15 civilian resources
-        for _ in range(15):
-            sample = random.choice(CIVILIAN_SAMPLES)
+        for sample in CIVILIAN_SAMPLES:
             CivilianResource.objects.create(
                 contact_person=sample['contact'],
                 resource_type=sample['type'],
