@@ -46,16 +46,22 @@
                             <thead class="text-xs text-slate-700 uppercase bg-slate-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Name</th>
-                                    <th scope="col" class="px-6 py-3">Type</th>
+                                    <th scope="col" class="px-6 py-3">Profession</th>
                                     <th scope="col" class="px-6 py-3">Specialty</th>
+                                    <th scope="col" class="px-6 py-3">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for resource in professional_resources %}
                                 <tr class="bg-white border-b hover:bg-slate-50">
-                                    <td class="px-6 py-4 font-medium text-slate-900">{{ resource.name }}</td>
-                                    <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-900">{{ resource.alias }}</td>
+                                    <td class="px-6 py-4">{{ resource.profession }}</td>
                                     <td class="px-6 py-4">{{ resource.specialty }}</td>
+                                    {% if resource.status == 'inactive' %}
+                                        <td class="px-6 py-4, bg-red-600">{{ resource.status }}</td>
+                                    {% else %}
+                                        <td class="px-6 py-4">{{ resource.status }}</td>
+                                    {% endif %}
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -89,6 +95,11 @@
                                     <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
                                     <td class="px-6 py-4">{{ resource.description }}</td>
                                     <td class="px-6 py-4">{{ resource.quantity }}</td>
+                                    {% if resource.status == 'destroyed' %}
+                                        <td class="px-6 py-4, bg-red-600">{{ resource.status }}</td>
+                                    {% else %}
+                                        <td class="px-6 py-4">{{ resource.status }}</td>
+                                    {% endif %}
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -142,44 +153,21 @@
 
             const rawString = document.getElementById('civilian-data').textContent;
             let notraw = (JSON.parse(rawString));
-            alert(notraw)
-            /*
-            for (i of notraw) {
-                alert()
-            }
-            */
-
-            // This should alert a string beginning with '['
-            //alert('Raw Content Type: ' + (typeof rawString)); 
-            // alert('Raw Content: ' + rawString); 
 
             
             let professionalData = JSON.parse(JSON.parse(document.getElementById('professional-data').textContent));
-            // professionalData = professionalData.slice(1,-1)
-            //alert(professionalData)
-            //let professionalData2 = JSON.parse(professionalData);
-            // alert(professionalData)
             let civilianData = JSON.parse(JSON.parse(document.getElementById('civilian-data').textContent));
 
             // Plot professional resources (blue markers)
             for (const resource of professionalData) {
-                //const item = professionalData[resource];
-                //alert(item)
-                //const { name, resource_type, specialty, latitude, longitude } = item.fields;
-                // const model = resource.model
                 const name = resource.fields.name
-                const resource_type = resource.fields.resource_type
+                const resource_type = resource.fields.profession
                 const specialty = resource.fields.specialty
                 const latitude = resource.fields.latitude
                 const longitude = resource.fields.longitude
-                //const resource_type = resource.resource_type
-                //const specialty = resource.specialty
-                //const latitude = resource.latitude
-                //const longitude = resource.longitude
-
                 L.marker([latitude, longitude], { icon: professionalIcon })
                     .addTo(map)
-                    .bindPopup(`<b>${name} (${resource_type})</b><br>${specialty}`);
+                    .bindPopup(`<b>${name} ${resource_type}</b><br>${specialty}`);
             }
 
             for (const resource of civilianData) {
@@ -193,25 +181,7 @@
                 L.marker([latitude, longitude], { icon: civilianIcon })
                     .addTo(map)
                     .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
-            }
-
-            /*
-            professionalData.forEach(resource => {
-                const { name, resource_type, specialty, latitude, longitude } = resource.fields;
-                L.marker([latitude, longitude], { icon: professionalIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${name} (${resource_type})</b><br>${specialty}`);
-            });
-
-            // Plot civilian resources (green markers)
-            civilianData.forEach(resource => {
-                const { contact_person, resource_type, description, quantity, latitude, longitude } = resource.fields;
-                L.marker([latitude, longitude], { icon: civilianIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
-            });
-            */
-
+                }
         } catch (error) {
             console.error("Error processing map data:", error);
         }
