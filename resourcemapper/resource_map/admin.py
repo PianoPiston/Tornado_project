@@ -3,8 +3,8 @@ from .models import ProfessionalResource, CivilianResource
 
 @admin.register(ProfessionalResource)
 class ProfessionalResourceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'resource_type', 'specialty', 'latitude', 'longitude', 'created_at')
-    list_filter = ('resource_type',)
+    list_display = ('name', 'profession', 'specialty', 'latitude', 'longitude', 'created_at')
+    list_filter = ('profession',)
     search_fields = ('name', 'specialty')
 
 @admin.register(CivilianResource)

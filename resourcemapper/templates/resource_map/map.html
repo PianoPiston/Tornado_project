@@ -47,8 +47,9 @@
                             <thead class="text-xs text-slate-700 uppercase bg-slate-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Name</th>
-                                    <th scope="col" class="px-6 py-3">Type</th>
+                                    <th scope="col" class="px-6 py-3">Profession</th>
                                     <th scope="col" class="px-6 py-3">Specialty</th>
+                                    <th scope="col" class="px-6 py-3">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,9 +57,14 @@
                                 <tr class="resource-row bg-white border-b hover:bg-slate-100 cursor-pointer transition-colors"
                                     data-id="{{ resource.pk }}"
                                     data-type="prof">
-                                    <td class="px-6 py-4 font-medium text-slate-900">{{ resource.name }}</td>
-                                    <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-900">{{ resource.alias }}</td>
+                                    <td class="px-6 py-4">{{ resource.profession }}</td>
                                     <td class="px-6 py-4">{{ resource.specialty }}</td>
+                                    {% if resource.status == 'inactive' %}
+                                        <td class="px-6 py-4, bg-red-600">{{ resource.status }}</td>
+                                    {% else %}
+                                        <td class="px-6 py-4">{{ resource.status }}</td>
+                                    {% endif %}
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -94,6 +100,11 @@
                                     <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
                                     <td class="px-6 py-4">{{ resource.description }}</td>
                                     <td class="px-6 py-4">{{ resource.quantity }}</td>
+                                    {% if resource.status == 'destroyed' %}
+                                        <td class="px-6 py-4, bg-red-600">{{ resource.status }}</td>
+                                    {% else %}
+                                        <td class="px-6 py-4">{{ resource.status }}</td>
+                                    {% endif %}
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -196,32 +207,40 @@
 
             // Plot professional resources (blue markers)
             for (const resource of professionalData) {
+                const name = resource.fields.name
+                const resource_type = resource.fields.profession
+                const specialty = resource.fields.specialty
+                const latitude = resource.fields.latitude
+                const longitude = resource.fields.longitude
                 const pk = resource.pk; // Get Primary Key
                 const fields = resource.fields;
                 const mgrs = MGRSString(fields.latitude, fields.longitude);
 
-                const marker = L.marker([fields.latitude, fields.longitude], { icon: professionalIcon })
+                const marker = L.marker([latitude, longitude], { icon: professionalIcon })
                     .addTo(map)
-                    .bindPopup(`<b>${fields.name} (${fields.resource_type})</b><br>${fields.specialty} </br> MGRS:<b> ${mgrs}</b>`);
-                
+                    .bindPopup(`<b>${name} ${resource_type}</b><br>${specialty} </br> MGRS:<b> ${mgrs}</b>`);
                 // Store marker object and its default icon using the key 'prof-PK'
                 resourceMarkers[`prof-${pk}`] = { marker: marker, defaultIcon: professionalIcon };
             }
 
             // Plot civilian resources (green markers)
             for (const resource of civilianData) {
+                const contact_person = resource.fields.contact_person
+                const resource_type = resource.fields.resource_type
+                const description = resource.fields.description
+                const quantity = resource.fields.quantity
+                const latitude = resource.fields.latitude
+                const longitude = resource.fields.longitude
                 const pk = resource.pk; // Get Primary Key
                 const fields = resource.fields;
                 const mgrs = MGRSString(fields.latitude, fields.longitude);
 
-                const marker = L.marker([fields.latitude, fields.longitude], { icon: civilianIcon })
+                const marker = L.marker([latitude, longitude], { icon: civilianIcon })
                     .addTo(map)
-                    .bindPopup(`<b>${fields.resource_type} from ${fields.contact_person}</b><br>${fields.description}<br>Quantity: ${fields.quantity}</br> MGRS:<b> ${mgrs}</b>`);
-
+                    .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}</br> MGRS:<b> ${mgrs}</b>`);
+                }
                 // Store marker object and its default icon using the key 'civil-PK'
                 resourceMarkers[`civil-${pk}`] = { marker: marker, defaultIcon: civilianIcon };
-            }
-
         } catch (error) {
             console.error("Error processing map data:", error);
         }

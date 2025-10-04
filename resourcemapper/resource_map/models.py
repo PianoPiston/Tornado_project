@@ -3,6 +3,7 @@ from django.db import models
 # Choices for resource types to ensure data consistency.
 PROFESSIONAL_STATUS_CHOICES = [
     ('alive', 'Alive (Available)'),
+    ('inactive', 'Non operational'),
     ('lost', 'Missing/Lost'),
     ('injured', 'Injured/Incapacitated'),
     ('deceased', 'Deceased'),
@@ -28,7 +29,7 @@ CIVILIAN_RESOURCE_CHOICES = [
     ('car', 'Car'),
     ('tractor', 'Tractor'),
     ('generator', 'Generator'),
-    ('food_supply', 'Food Supply'),
+    ('food supply', 'Food Supply'),
     ('shelter', 'Shelter'),
     ('tools', 'Tools'),
 ]
@@ -38,7 +39,7 @@ class ProfessionalResource(models.Model):
     Represents professional expertise or services available at a specific location.
     """
     name = models.CharField(max_length=100)
-    resource_type = models.CharField(max_length=50, choices=PROFESSIONAL_RESOURCE_CHOICES)
+    profession = models.CharField(max_length=50, choices=PROFESSIONAL_RESOURCE_CHOICES)
     specialty = models.CharField(max_length=100, help_text="e.g., Cardiologist, Diesel engines")
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -60,7 +61,7 @@ class ProfessionalResource(models.Model):
     )
 
     def __str__(self):
-        return f"{self.get_resource_type_display()}: {self.name} ({self.specialty})"
+        return f"{self.get_profession_display()}: {self.name} ({self.specialty})"
 
 class CivilianResource(models.Model):
     """

@@ -29,5 +29,6 @@ urlpatterns = [
     path('logout/', views.logout),
     path('dashboard/', views.dashboard_view, name='dashboard_view'),
     # 2. This URL corresponds to '/add/'
-    path('add/', views.add_civilian_resource_view, name='add_civilian_resource'),
+    path('add/', views.add_resource_view, name='add_resource_view'),
+    path("update_status/<str:resource_type>/<int:resource_id>/", views.update_status, name="update_status"),
 ]

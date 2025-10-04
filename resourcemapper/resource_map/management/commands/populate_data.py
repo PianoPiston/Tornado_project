@@ -29,7 +29,7 @@ CIVILIAN_SAMPLES = [
     {'type': 'car', 'contact': 'Matti', 'desc': 'Volvo V70', 'qty': '1 vehicle'},
     {'type': 'tractor', 'contact': 'Liisa', 'desc': 'Valtra T-Series', 'qty': '1 tractor'},
     {'type': 'generator', 'contact': 'Pekka', 'desc': 'Honda 5kW Petrol', 'qty': '1 unit'},
-    {'type': 'food_supply', 'contact': 'Anna', 'desc': 'Canned goods', 'qty': '50 kg'},
+    {'type': 'food supply', 'contact': 'Anna', 'desc': 'Canned goods', 'qty': '50 kg'},
     {'type': 'shelter', 'contact': 'Eemeli', 'desc': 'Basement shelter', 'qty': '5 person capacity'},
     {'type': 'tools', 'contact': 'Sofia', 'desc': 'General mechanics toolkit', 'qty': '1 set'},
 ]
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             sample = random.choice(PROFESSIONAL_SAMPLES)
             ProfessionalResource.objects.create(
                 name=sample['name'],
-                resource_type=sample['type'],
+                profession=sample['type'],
                 specialty=sample['specialty'],
                 latitude=random.uniform(FINLAND_COORDS['lat_min'], FINLAND_COORDS['lat_max']),
                 longitude=random.uniform(FINLAND_COORDS['lon_min'], FINLAND_COORDS['lon_max']),
