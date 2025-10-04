@@ -8,7 +8,8 @@
     <!-- Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+
+
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -52,7 +53,9 @@
                             </thead>
                             <tbody>
                                 {% for resource in professional_resources %}
-                                <tr class="bg-white border-b hover:bg-slate-50">
+                                <tr class="resource-row bg-white border-b hover:bg-slate-100 cursor-pointer transition-colors"
+                                    data-id="{{ resource.pk }}"
+                                    data-type="prof">
                                     <td class="px-6 py-4 font-medium text-slate-900">{{ resource.name }}</td>
                                     <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
                                     <td class="px-6 py-4">{{ resource.specialty }}</td>
@@ -84,7 +87,9 @@
                             </thead>
                             <tbody>
                                 {% for resource in civilian_resources %}
-                                <tr class="bg-white border-b hover:bg-slate-50">
+                                <tr class="resource-row bg-white border-b hover:bg-slate-100 cursor-pointer transition-colors"
+                                    data-id="{{ resource.pk }}"
+                                    data-type="civil">
                                     <td class="px-6 py-4 font-medium text-slate-900">{{ resource.contact_person }}</td>
                                     <td class="px-6 py-4">{{ resource.get_resource_type_display }}</td>
                                     <td class="px-6 py-4">{{ resource.description }}</td>
@@ -108,6 +113,53 @@
     {{ civilian_resources_json|json_script:"civilian-data" }}
 
     <script>
+        function MGRSString (Lat, Long) { 
+            if (Lat < -80) return 'Too far South' ; if (Lat > 84) return 'Too far North' ;
+                var c = 1 + Math.floor ((Long+180)/6);
+                var e = c*6 - 183 ;
+                var k = Lat*Math.PI/180;
+                var l = Long*Math.PI/180;
+                var m = e*Math.PI/180;
+                var n = Math.cos (k);
+                var o = 0.006739496819936062*Math.pow (n,2);
+                var p = 40680631590769/(6356752.314*Math.sqrt(1 + o));
+                var q = Math.tan (k);
+                var r = q*q;
+                var s = (r*r*r) - Math.pow (q,6);
+                var t = l - m;
+                var u = 1.0 - r + o;
+                var v = 5.0 - r + 9*o + 4.0*(o*o);
+                var w = 5.0 - 18.0*r + (r*r) + 14.0*o - 58.0*r*o;
+                var x = 61.0 - 58.0*r + (r*r) + 270.0*o - 330.0*r*o;
+                var y = 61.0 - 479.0*r + 179.0*(r*r) - (r*r*r);
+                var z = 1385.0 - 3111.0*r + 543.0*(r*r) - (r*r*r);
+                var aa = p*n*t + (p/6.0*Math.pow (n,3)*u*Math.pow (t,3)) + (p/120.0*Math.pow (n,5)*w*Math.pow (t,5)) + (p/5040.0*Math.pow (n,7)*y*Math.pow (t,7));
+                var ab = 6367449.14570093*(k - (0.00251882794504*Math.sin (2*k)) + (0.00000264354112*Math.sin (4*k)) - (0.00000000345262*Math.sin (6*k)) + (0.000000000004892*Math.sin (8*k))) + (q/2.0*p*Math.pow (n,2)*Math.pow (t,2)) + (q/24.0*p*Math.pow (n,4)*v*Math.pow (t,4)) + (q/720.0*p*Math.pow (n,6)*x*Math.pow (t,6)) + (q/40320.0*p*Math.pow (n,8)*z*Math.pow (t,8));
+                aa = aa*0.9996 + 500000.0;
+                ab = ab*0.9996; if (ab < 0.0) ab += 10000000.0;
+                var ad = 'CDEFGHJKLMNPQRSTUVWXX'.charAt (Math.floor (Lat/8 + 10));
+                var ae = Math.floor (aa/100000);
+                var af = ['ABCDEFGH','JKLMNPQR','STUVWXYZ'][(c-1)%3].charAt (ae-1);
+                var ag = Math.floor (ab/100000)%20;
+                var ah = ['ABCDEFGHJKLMNPQRSTUV','FGHJKLMNPQRSTUVABCDE'][(c-1)%2].charAt (ag);
+                function pad (val) {if (val < 10) {val = '0000' + val} else if (val < 100) {val = '000' + val} else if (val < 1000) {val = '00' + val} else if (val < 10000) {val = '0' + val};return val};
+                aa = Math.floor (aa%100000); aa = pad (aa);
+                ab = Math.floor (ab%100000); ab = pad (ab);
+                return c + ad + ' ' + af + ah + ' ' + aa + ' ' + ab;
+        };
+
+        const resourceMarkers = {};
+        let activeMarkerKey = null;
+
+        const highlightedIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
         // --- 1. Initialize Map ---
         // Center the map on Finland
         const map = L.map('map').setView([64.0, 26.0], 5);
@@ -138,83 +190,93 @@
 
         // --- 3. Process and Plot Data ---
         try {
-            // Get data from the JSON script tags
-
-            const rawString = document.getElementById('civilian-data').textContent;
-            let notraw = (JSON.parse(rawString));
-            alert(notraw)
-            /*
-            for (i of notraw) {
-                alert()
-            }
-            */
-
-            // This should alert a string beginning with '['
-            //alert('Raw Content Type: ' + (typeof rawString)); 
-            // alert('Raw Content: ' + rawString); 
-
-            
+            // Corrected data parsing: Handle the double JSON stringification from Django's json_script
             let professionalData = JSON.parse(JSON.parse(document.getElementById('professional-data').textContent));
-            // professionalData = professionalData.slice(1,-1)
-            //alert(professionalData)
-            //let professionalData2 = JSON.parse(professionalData);
-            // alert(professionalData)
             let civilianData = JSON.parse(JSON.parse(document.getElementById('civilian-data').textContent));
 
             // Plot professional resources (blue markers)
             for (const resource of professionalData) {
-                //const item = professionalData[resource];
-                //alert(item)
-                //const { name, resource_type, specialty, latitude, longitude } = item.fields;
-                // const model = resource.model
-                const name = resource.fields.name
-                const resource_type = resource.fields.resource_type
-                const specialty = resource.fields.specialty
-                const latitude = resource.fields.latitude
-                const longitude = resource.fields.longitude
-                //const resource_type = resource.resource_type
-                //const specialty = resource.specialty
-                //const latitude = resource.latitude
-                //const longitude = resource.longitude
+                const pk = resource.pk; // Get Primary Key
+                const fields = resource.fields;
+                const mgrs = MGRSString(fields.latitude, fields.longitude);
 
-                L.marker([latitude, longitude], { icon: professionalIcon })
+                const marker = L.marker([fields.latitude, fields.longitude], { icon: professionalIcon })
                     .addTo(map)
-                    .bindPopup(`<b>${name} (${resource_type})</b><br>${specialty}`);
+                    .bindPopup(`<b>${fields.name} (${fields.resource_type})</b><br>${fields.specialty} </br> MGRS:<b> ${mgrs}</b>`);
+                
+                // Store marker object and its default icon using the key 'prof-PK'
+                resourceMarkers[`prof-${pk}`] = { marker: marker, defaultIcon: professionalIcon };
             }
-
-            for (const resource of civilianData) {
-                const contact_person = resource.fields.contact_person
-                const resource_type = resource.fields.resource_type
-                const description = resource.fields.description
-                const quantity = resource.fields.quantity
-                const latitude = resource.fields.latitude
-                const longitude = resource.fields.longitude
-
-                L.marker([latitude, longitude], { icon: civilianIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
-            }
-
-            /*
-            professionalData.forEach(resource => {
-                const { name, resource_type, specialty, latitude, longitude } = resource.fields;
-                L.marker([latitude, longitude], { icon: professionalIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${name} (${resource_type})</b><br>${specialty}`);
-            });
 
             // Plot civilian resources (green markers)
-            civilianData.forEach(resource => {
-                const { contact_person, resource_type, description, quantity, latitude, longitude } = resource.fields;
-                L.marker([latitude, longitude], { icon: civilianIcon })
+            for (const resource of civilianData) {
+                const pk = resource.pk; // Get Primary Key
+                const fields = resource.fields;
+                const mgrs = MGRSString(fields.latitude, fields.longitude);
+
+                const marker = L.marker([fields.latitude, fields.longitude], { icon: civilianIcon })
                     .addTo(map)
-                    .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
-            });
-            */
+                    .bindPopup(`<b>${fields.resource_type} from ${fields.contact_person}</b><br>${fields.description}<br>Quantity: ${fields.quantity}</br> MGRS:<b> ${mgrs}</b>`);
+
+                // Store marker object and its default icon using the key 'civil-PK'
+                resourceMarkers[`civil-${pk}`] = { marker: marker, defaultIcon: civilianIcon };
+            }
 
         } catch (error) {
             console.error("Error processing map data:", error);
         }
+
+        // ----------------------------------------------------------------------
+        // --- 4. Event Listener for Table Clicks (NEW LOGIC) ---
+        // ----------------------------------------------------------------------
+        
+        document.addEventListener('click', (event) => {
+            // Find the closest table row with the 'resource-row' class
+            const row = event.target.closest('.resource-row');
+
+            if (row) {
+                const type = row.dataset.type; // 'prof' or 'civil'
+                const id = row.dataset.id;     // Primary Key (pk)
+                const markerKey = `${type}-${id}`;
+                const resourceInfo = resourceMarkers[markerKey];
+
+                // 1. Scroll to the map
+                document.getElementById('map').scrollIntoView();
+
+                // 2. Reset the previously active marker and row style
+                if (activeMarkerKey && activeMarkerKey !== markerKey) {
+                    const prevResource = resourceMarkers[activeMarkerKey];
+                    if (prevResource) {
+                        // Reset marker icon
+                        prevResource.marker.setIcon(prevResource.defaultIcon);
+                    }
+                    // Reset previous row's highlight style
+                    const prevRow = document.querySelector(`.resource-row[data-id="${activeMarkerKey.split('-')[1]}"][data-type="${activeMarkerKey.split('-')[0]}"]`);
+                    if (prevRow) {
+                        prevRow.classList.remove('highlighted-row');
+                    }
+                }
+
+                // 3. Highlight the current marker and row
+                if (resourceInfo) {
+                    // Change marker icon to red
+                    resourceInfo.marker.setIcon(highlightedIcon);
+                    
+                    // Pan the map to the highlighted marker's location and open the popup
+                    map.flyTo(resourceInfo.marker.getLatLng(), Math.max(map.getZoom(), 8)); // Zoom in slightly if needed
+                    resourceInfo.marker.openPopup();
+                    
+                    // Add highlight style to the current row
+                    row.classList.add('highlighted-row');
+                }
+
+                // 4. Update the active key
+                activeMarkerKey = markerKey;
+            }
+        });
+    </script>
+</body>
+</html>
 
     </script>
 </body>
