@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <title>Finland Resource Map</title>
     
     <!-- Leaflet CSS and JS -->
@@ -27,17 +29,41 @@
 <body class="font-sans">
 
     <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-slate-800">Finland Resource Map</h1>
-            <p class="text-slate-600 mt-2">Visualizing professional and civilian-volunteered assets.</p>
-        </header>
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-slate-800">Finland Resource Map</h1>
+        <p class="text-slate-600 mt-2">Visualizing professional and civilian-volunteered assets.</p>
+    </header>
+
+        <!-- 🔍 Search Bar -->
+        <div class="flex justify-center mb-6">
+            <div class="w-full max-w-xl">
+                <label for="search-input" class="block text-sm font-medium text-slate-700 mb-2">Search Resources</label>
+                <div class="flex rounded-md shadow-sm">
+                    <form method="get" action="{% url 'map_view' %}">
+                        <input 
+                            type="text" 
+                            name="searchterm" 
+                            value="{{ searchterm }}"
+                            placeholder="Search..."
+                            class="flex-grow px-4 py-2 border border-slate-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        />
+                        <button 
+                            type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Map Container -->
         <div id="map" class="rounded-lg shadow-lg z-0 mb-8"></div>
 
         <!-- Resource Tables Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+
             <!-- Professional Resources Table -->
             <div>
                 <h2 class="text-2xl font-bold text-slate-800 mb-4">Professional Expertise</h2>
