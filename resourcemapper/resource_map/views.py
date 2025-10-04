@@ -5,6 +5,7 @@ from django.core.serializers import serialize
 from django.views.decorators.http import require_POST
 from .models import ProfessionalResource, CivilianResource
 from .forms import CivilianResourceForm, ProfessionalResourceForm
+from django.db.models import Q
 
 @require_POST
 def update_status(request, resource_type, resource_id):
@@ -34,8 +35,26 @@ def map_view(request):
     Main view to display the map and resource tables.
     Fetches all resources and passes them to the template as JSON.
     """
-    professional_resources = ProfessionalResource.objects.all()
-    civilian_resources = CivilianResource.objects.all()
+    searchterm = request.GET.get('searchterm', '').strip()
+
+    if not searchterm:
+        professional_resources = ProfessionalResource.objects.all()
+        civilian_resources = CivilianResource.objects.all()
+    else:
+        prof_query = Q()
+        civ_query = Q()
+        prof_query |= Q(profession__icontains=searchterm)
+        prof_query |= Q(specialty__icontains=searchterm)
+        prof_query |= Q(alias__icontains=searchterm)
+
+        civ_query |= Q(contact_person__icontains=searchterm)
+        civ_query |= Q(resource_type__icontains=searchterm)
+        civ_query |= Q(description__icontains=searchterm)
+        civ_query |= Q(alias__icontains=searchterm)
+
+        professional_resources = ProfessionalResource.objects.filter(prof_query).distinct()
+        civilian_resources = CivilianResource.objects.filter(civ_query).distinct()
+
 
     # Serialize querysets to JSON to be safely used in JavaScript
     professional_resources_json = serialize('json', professional_resources)
