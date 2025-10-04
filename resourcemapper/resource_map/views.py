@@ -24,6 +24,26 @@ def map_view(request):
     }
     return render(request, 'resource_map/map.html', context)
 
+def welcome_view(request):
+    return render(request, 'resource_map/welcome.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            request.session['username'] = name  # store in session
+            return redirect('/dashboard/')
+    return render(request, 'resource_map/login.html')
+
+def dashboard_view(request):
+    name = request.session.get('username')
+    if not name: 
+        return redirect("/login/")
+    return render(request, 'resource_map/dashboard.html', {'name': name})
+
+def logout(request):
+    request.session.flush()
+    return redirect("/")
 
 def add_civilian_resource_view(request):
     """
@@ -35,7 +55,7 @@ def add_civilian_resource_view(request):
         form = CivilianResourceForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('map_view') # Redirect to the main map after successful submission
+            return redirect('/dashboard') # Redirect to the main map after successful submission
     else:
         form = CivilianResourceForm()
 
