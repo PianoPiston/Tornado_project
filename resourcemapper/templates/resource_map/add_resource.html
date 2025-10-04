@@ -99,11 +99,11 @@
             submitButton.disabled = true;
         } else {
              // If values exist, place a marker for visual feedback
-             marker = L.marker([parseFloat(latInput.value), parseFloat(lonInput.value)]).addTo(map);
-             locationHelpText.textContent = `Location set at: ${parseFloat(latInput.value).toFixed(4)}, ${parseFloat(lonInput.value).toFixed(4)}`;
-             locationHelpText.classList.remove('text-slate-500');
-             locationHelpText.classList.add('text-green-600', 'font-semibold');
-             map.setView(marker.getLatLng(), 8); // Zoom in on existing marker
+            marker = L.marker([parseFloat(latInput.value), parseFloat(lonInput.value)]).addTo(map);
+            locationHelpText.textContent = `Location set at: ${parseFloat(latInput.value).toFixed(4)}, ${parseFloat(lonInput.value).toFixed(4)}`;
+            locationHelpText.classList.remove('text-slate-500');
+            locationHelpText.classList.add('text-green-600', 'font-semibold');
+            map.setView(marker.getLatLng(), 8); // Zoom in on existing marker
         }
 
 
