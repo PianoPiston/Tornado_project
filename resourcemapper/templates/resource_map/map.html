@@ -273,54 +273,122 @@
             console.error("Error processing map data:", error);
         }
 
-        // ----------------------------------------------------------------------
         // --- 4. Event Listener for Table Clicks (NEW LOGIC) ---
-        // ----------------------------------------------------------------------
-        
         document.addEventListener('click', (event) => {
-            // Find the closest table row with the 'resource-row' class
             const row = event.target.closest('.resource-row');
-
             if (row) {
-                const type = row.dataset.type; // 'prof' or 'civil'
-                const id = row.dataset.id;     // Primary Key (pk)
+                const type = row.dataset.type;
+                const id = row.dataset.id;
                 const markerKey = `${type}-${id}`;
                 const resourceInfo = resourceMarkers[markerKey];
 
-                // 1. Scroll to the map
                 document.getElementById('map').scrollIntoView();
 
-                // 2. Reset the previously active marker and row style
                 if (activeMarkerKey && activeMarkerKey !== markerKey) {
                     const prevResource = resourceMarkers[activeMarkerKey];
-                    if (prevResource) {
-                        // Reset marker icon
-                        prevResource.marker.setIcon(prevResource.defaultIcon);
-                    }
-                    // Reset previous row's highlight style
-                    const prevRow = document.querySelector(`.resource-row[data-id="${activeMarkerKey.split('-')[1]}"][data-type="${activeMarkerKey.split('-')[0]}"]`);
-                    if (prevRow) {
-                        prevRow.classList.remove('highlighted-row');
-                    }
+                    if (prevResource) prevResource.marker.setIcon(prevResource.defaultIcon);
+                    const prevRow = document.querySelector(
+                        `.resource-row[data-id="${activeMarkerKey.split('-')[1]}"][data-type="${activeMarkerKey.split('-')[0]}"]`
+                    );
+                    if (prevRow) prevRow.classList.remove('highlighted-row');
                 }
 
-                // 3. Highlight the current marker and row
                 if (resourceInfo) {
-                    // Change marker icon to red
                     resourceInfo.marker.setIcon(highlightedIcon);
-                    
-                    // Pan the map to the highlighted marker's location and open the popup
-                    map.flyTo(resourceInfo.marker.getLatLng(), Math.max(map.getZoom(), 8)); // Zoom in slightly if needed
+                    map.flyTo(resourceInfo.marker.getLatLng(), Math.max(map.getZoom(), 8));
                     resourceInfo.marker.openPopup();
-                    
-                    // Add highlight style to the current row
                     row.classList.add('highlighted-row');
                 }
 
-                // 4. Update the active key
                 activeMarkerKey = markerKey;
             }
+        }); // <--- CLOSE THIS EVENT LISTENER FIRST
+
+
+
+        // ----------------------------------------------------------------------
+        // --- 5. Click-to-drop movable pin with popup radius input & filtering ---
+        // ----------------------------------------------------------------------
+
+        let searchMarker = null;
+        let searchCircle = null;
+
+        map.on('click', function (e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+
+            if (searchCircle) {
+                map.removeLayer(searchCircle);
+                searchCircle = null;
+            }
+
+            if (!searchMarker) {
+                searchMarker = L.marker([lat, lng], { draggable: false, icon: highlightedIcon }).addTo(map);
+            } else {
+                searchMarker.setLatLng([lat, lng]);
+            }
+
+            const popupContent = `
+                <div style="font-size: 14px;">
+                    <label>Radius (km):</label><br>
+                    <input type="number" id="radius-input" min="0.1" step="0.1"
+                        style="width: 80px; padding: 2px; border: 1px solid #ccc; border-radius: 4px;"><br>
+                    <button id="radius-submit"
+                            style="margin-top: 4px; background-color: #2563eb; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer;">
+                        Apply
+                    </button>
+                </div>
+            `;
+
+            searchMarker.bindPopup(popupContent).openPopup();
+
+            setTimeout(() => {
+                const button = document.getElementById('radius-submit');
+                if (!button) return;
+
+                button.addEventListener('click', () => {
+                    const radiusKm = parseFloat(document.getElementById('radius-input').value);
+                    if (isNaN(radiusKm) || radiusKm <= 0) {
+                        alert("Invalid radius.");
+                        return;
+                    }
+                    const radiusMeters = radiusKm * 1000;
+
+                    if (searchCircle) map.removeLayer(searchCircle);
+
+                    searchCircle = L.circle(searchMarker.getLatLng(), {
+                        radius: radiusMeters,
+                        color: 'red',
+                        fillOpacity: 0.05,
+                        weight: 1.5,
+                        dashArray: '5, 5'
+                    }).addTo(map);
+
+                    const inside = new Set();
+                    for (const [key, entry] of Object.entries(resourceMarkers)) {
+                        const marker = entry.marker;
+                        const dist = map.distance(searchMarker.getLatLng(), marker.getLatLng());
+                        if (dist <= radiusMeters) inside.add(key);
+                    }
+
+                    document.querySelectorAll('.resource-row').forEach(row => {
+                        const type = row.dataset.type;
+                        const id = row.dataset.id;
+                        const key = `${type}-${id}`;
+                        row.style.display = inside.has(key) ? '' : 'none';
+                    });
+
+                    if (inside.size === 0) {
+                        alert("No resources or skillsets found within that radius.");
+                    }
+
+                    map.flyTo(searchMarker.getLatLng(), Math.max(map.getZoom(), 7));
+                    searchMarker.closePopup();
+                });
+            }, 100);
         });
+
+
     </script>
 </body>
 </html>
