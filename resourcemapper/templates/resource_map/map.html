@@ -238,9 +238,11 @@
                 const marker = L.marker([latitude, longitude], { icon: civilianIcon })
                     .addTo(map)
                     .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}</br> MGRS:<b> ${mgrs}</b>`);
-                }
+                
                 // Store marker object and its default icon using the key 'civil-PK'
                 resourceMarkers[`civil-${pk}`] = { marker: marker, defaultIcon: civilianIcon };
+            }
+
         } catch (error) {
             console.error("Error processing map data:", error);
         }
