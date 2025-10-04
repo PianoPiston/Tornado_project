@@ -2,13 +2,11 @@
 * Python 3
 * pip3
 
-⚙️ Installation
-First, install Django using pip:
+⚙️First, install Django using pip:
 ```console
 $ pip3 install django
 ```
-🚀 Usage
-Clone the repository and navigate into the project folder:
+🚀 Next, clone the repository and navigate into the project folder:
 
 ```console
 $ git clone <repository_url>
