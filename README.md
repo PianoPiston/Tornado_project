@@ -34,11 +34,10 @@ $ python3 manage.py runserver
 Open your browser and visit:
 👉 http://127.0.0.1:8000
 
-🗺️ Page Layout
-Page	            URL Path	  Description
-Introduction	    /	          Homepage or overview
-Login	            /login	    User login page
-Volunteer Form	  /add	      Add new volunteer data
-Dashboard	        /dashboard	User dashboard
-Supervisory Map	  /map	      Map view of resources
+🗺️ Pages to visit
+/
+/login
+/add
+/dashboard
+/map
 
