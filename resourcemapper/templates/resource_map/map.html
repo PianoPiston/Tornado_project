@@ -37,9 +37,9 @@
         <!-- 🔍 Search Bar -->
         <div class="flex justify-center mb-6">
             <div class="w-full max-w-xl">
-                <label for="search-input" class="block text-sm font-medium text-slate-700 mb-2">Search Resources</label>
-                <div class="flex rounded-md shadow-sm">
-                    <form method="get" action="{% url 'map_view' %}">
+                <label for="search-input" class="block text-sm font-medium text-slate-700 mb-2 text-center">Search Resources</label>
+                <div class="flex w-full shadow-sm rounded-md max-w-md mx-auto">
+                    <form method="get" action="{% url 'map_view' %} " class="flex w-full center">
                         <input 
                             type="text" 
                             name="searchterm" 
