@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.urls import path, include
 from resource_map import views
 
 urlpatterns = [
@@ -24,8 +23,11 @@ urlpatterns = [
     # path('', include('resourcemap.urls'))
     # 1. This URL corresponds to the root of the included path (which is the root of the site: '/')
     # This is your main map view.
-    path('', views.map_view, name='map_view'),
-    
+    path('', views.welcome_view, name='welcome_view'),
+    path('map/', views.map_view, name='map_view'),
+    path('login/', views.login_view, name='login_view'),
+    path('logout/', views.logout),
+    path('dashboard/', views.dashboard_view, name='dashboard_view'),
     # 2. This URL corresponds to '/add/'
     path('add/', views.add_civilian_resource_view, name='add_civilian_resource'),
 ]

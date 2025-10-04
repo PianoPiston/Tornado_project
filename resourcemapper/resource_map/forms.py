@@ -17,6 +17,6 @@ class CivilianResourceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['contact_person'].widget.attrs.update({'placeholder': 'Your Name or Contact Info'})
+        self.fields['contact_person'].widget.attrs.update({'placeholder': 'Contact Info'})
         self.fields['description'].widget.attrs.update({'placeholder': 'e.g., Toyota Hilux, 4 people capacity'})
         self.fields['quantity'].widget.attrs.update({'placeholder': 'e.g., 1 vehicle, 10kg of potatoes'})
