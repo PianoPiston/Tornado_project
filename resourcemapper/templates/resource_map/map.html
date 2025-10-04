@@ -142,10 +142,63 @@
         // --- 3. Process and Plot Data ---
         try {
             // Get data from the JSON script tags
-            const professionalData = JSON.parse(document.getElementById('professional-data').textContent);
-            const civilianData = JSON.parse(document.getElementById('civilian-data').textContent);
+
+            const rawString = document.getElementById('civilian-data').textContent;
+            let notraw = (JSON.parse(rawString));
+            alert(notraw)
+            /*
+            for (i of notraw) {
+                alert()
+            }
+            */
+
+            // This should alert a string beginning with '['
+            //alert('Raw Content Type: ' + (typeof rawString)); 
+            // alert('Raw Content: ' + rawString); 
+
+            
+            let professionalData = JSON.parse(JSON.parse(document.getElementById('professional-data').textContent));
+            // professionalData = professionalData.slice(1,-1)
+            //alert(professionalData)
+            //let professionalData2 = JSON.parse(professionalData);
+            // alert(professionalData)
+            let civilianData = JSON.parse(JSON.parse(document.getElementById('civilian-data').textContent));
 
             // Plot professional resources (blue markers)
+            for (const resource of professionalData) {
+                //const item = professionalData[resource];
+                //alert(item)
+                //const { name, resource_type, specialty, latitude, longitude } = item.fields;
+                // const model = resource.model
+                const name = resource.fields.name
+                const resource_type = resource.fields.resource_type
+                const specialty = resource.fields.specialty
+                const latitude = resource.fields.latitude
+                const longitude = resource.fields.longitude
+                //const resource_type = resource.resource_type
+                //const specialty = resource.specialty
+                //const latitude = resource.latitude
+                //const longitude = resource.longitude
+
+                L.marker([latitude, longitude], { icon: professionalIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>${name} (${resource_type})</b><br>${specialty}`);
+            }
+
+            for (const resource of civilianData) {
+                const contact_person = resource.fields.contact_person
+                const resource_type = resource.fields.resource_type
+                const description = resource.fields.description
+                const quantity = resource.fields.quantity
+                const latitude = resource.fields.latitude
+                const longitude = resource.fields.longitude
+
+                L.marker([latitude, longitude], { icon: civilianIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
+            }
+
+            /*
             professionalData.forEach(resource => {
                 const { name, resource_type, specialty, latitude, longitude } = resource.fields;
                 L.marker([latitude, longitude], { icon: professionalIcon })
@@ -160,6 +213,7 @@
                     .addTo(map)
                     .bindPopup(`<b>${resource_type} from ${contact_person}</b><br>${description}<br>Quantity: ${quantity}`);
             });
+            */
 
         } catch (error) {
             console.error("Error processing map data:", error);
