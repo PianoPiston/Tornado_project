@@ -1,0 +1,23 @@
+
+
+Citizen webpage
+- Welcome/Introduction page
+- Authentication
+- Survey
+  * Location
+  * Contact information?
+  * Skills
+  * Equipment
+- Update page?
+
+Backend
+- Web server
+- Ai analysis of the form
+- Database
+
+Operational side
+- Map?
+- Search functionality?
+
+MGRS conversion and area search?
+Maybe some sort of web scraper for tori.fi etc...
