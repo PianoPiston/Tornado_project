@@ -1,5 +1,5 @@
 # About
-This project is a prototype built in a hackathon in one and 6 hours:
+This project is a prototype built in a hackathon in a total of 24 hours (one day and 5 hours):
 The project is an interactive map allowing military/medical access to civilian resources and expertise/assistance in times of emergencies, such as natural disasters or wars.
 Markers are created by individuals and organisations who volunteer their skills and help in cases of emergency. The condition and availability of resources and skillsets are
 modifiable by their respective creators.
