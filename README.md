@@ -1,6 +1,7 @@
 🧩 Requirements
 * Python 3
 * pip3
+* Django
 
 ⚙️First, install Django using pip:
 ```console
@@ -38,4 +39,14 @@ Open your browser and visit:
 /add
 /dashboard
 /map
+
+# Preview
+<img width="1920" height="1080" alt="Screenshot_20251005_162841" src="https://github.com/user-attachments/assets/448752c4-4625-46dc-8747-f0fb4ad2134c" />
+
+<img width="1920" height="1080" alt="Screenshot_20251005_163022" src="https://github.com/user-attachments/assets/696a3fa0-45f3-45b9-a9f0-9e0d71a5d6f0" />
+
+<img width="1224" height="456" alt="Screenshot_20251005_163102" src="https://github.com/user-attachments/assets/5648fe77-46ea-421a-a98b-6153bc103f7c" />
+
+<img width="928" height="754" alt="Screenshot_20251005_163206" src="https://github.com/user-attachments/assets/51daf719-375e-4d74-9ea4-c52898bd7c5f" />
+
 
