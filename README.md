@@ -5,10 +5,10 @@ Markers are created by individuals and organisations who volunteer their skills 
 modifiable by their respective creators.
 
 features: 
-filter out out-of-range resources by clicking on your position and entering a radius to see availability
-MGRS coordinates provided on top of longitude and latitude
-search for resources needed by using the provided search bar
-AI searches resources and generates markers & summaries [not implemented]
+ - filter out out-of-range resources by clicking on your position and entering a radius to see availability
+ - MGRS coordinates provided on top of longitude and latitude
+ - search for resources needed by using the provided search bar
+ - AI searches resources and generates markers & summaries [not implemented]
 
 🧩 Requirements
 * Python 3
